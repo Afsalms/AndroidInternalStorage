@@ -6,31 +6,24 @@ import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
 import android.widget.*
+import java.io.File
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), View.OnClickListener {
 
-    var storageChoice = "Shared preference"
-    var preferenceName = "mySharedPreference"
-    lateinit var sharedpreference:SharedPreferences
+    var storageChoice = "file system"
+    val filename = "test.txt"
+    var inputTextField: TextView? = null
+    var loadText:TextView? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        sharedpreference = getPreferences(preferenceName, Context.MODE_PRIVATE)
-        var inputTextField = findViewById<TextView>(R.id.editText2)
+        inputTextField = findViewById<TextView>(R.id.editText2)
+        loadText = findViewById<TextView>(R.id.textView2)
 
         var saveBtn = findViewById<Button>(R.id.save_button)
-        saveBtn.setOnClickListener(View.OnClickListener {
-            Toast.makeText(this, "save clicked", Toast.LENGTH_SHORT).show()
-
-            var inputText = inputTextField.text
-            Toast.makeText(this, storageChoice, Toast.LENGTH_SHORT).show()
-            Toast.makeText(this, inputText, Toast.LENGTH_SHORT).show()
-
-        })
+        saveBtn.setOnClickListener(this)
         var loadBtn = findViewById<Button>(R.id.load_button)
-        loadBtn.setOnClickListener(View.OnClickListener {
-            Toast.makeText(this, "load ckicked", Toast.LENGTH_SHORT).show()
-        })
+        loadBtn.setOnClickListener(this)
     }
 
     fun radioButtonClick(v: View){
@@ -38,4 +31,53 @@ class MainActivity : AppCompatActivity() {
         storageChoice = radionBtn.text.toString()
         Toast.makeText(this, storageChoice, Toast.LENGTH_SHORT).show()
     }
+
+    override fun onClick(v: View?) {
+        when(v?.id){
+            R.id.save_button -> {
+                Toast.makeText(this, "Save button clicked", Toast.LENGTH_SHORT).show()
+                saveToFileSystem()
+                inputTextField?.text = ""
+
+            }
+            R.id.load_button -> {
+                Toast.makeText(this, "Load buttin clicked", Toast.LENGTH_SHORT).show()
+            }
+        }
+
+    }
+
+    fun saveToLocalStorage(){
+        when(storageChoice){
+            "file system" -> {
+                saveToFileSystem()
+            }
+            "shared preference" -> {
+                saveToSharedPreference()
+            }
+            "SQLite" -> {
+                saveToSQLite()
+            }
+        }
+    }
+
+    fun saveToFileSystem(){
+        var fileObj = File(this.filesDir, filename)
+        if(fileObj.exists()){
+            fileObj.appendText(inputTextField?.text.toString()+"\n")
+        }else{
+            fileObj.writeText(inputTextField?.text.toString() + "\n")
+        }
+    }
+
+    fun saveToSharedPreference(){
+        TODO()
+    }
+
+    fun saveToSQLite(){
+        TODO()
+    }
+
+
+
 }
