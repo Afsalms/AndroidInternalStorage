@@ -6,6 +6,7 @@ import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
 import android.widget.*
+import kotlinx.android.synthetic.main.activity_main.*
 import java.io.File
 
 class MainActivity : AppCompatActivity(), View.OnClickListener {
@@ -27,7 +28,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
     }
 
     fun radioButtonClick(v: View){
-        var radionBtn = findViewById<RadioButton>(v.id)
+        val radionBtn = findViewById<RadioButton>(v.id)
         storageChoice = radionBtn.text.toString()
         Toast.makeText(this, storageChoice, Toast.LENGTH_SHORT).show()
     }
@@ -41,13 +42,16 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
 
             }
             R.id.load_button -> {
-                Toast.makeText(this, "Load buttin clicked", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Load button clicked", Toast.LENGTH_SHORT).show()
+                loadFromLocalStorage()
             }
         }
 
     }
 
     fun saveToLocalStorage(){
+        loadText?.text = ""
+        loadText?.visibility = View.INVISIBLE
         when(storageChoice){
             "file system" -> {
                 saveToFileSystem()
@@ -71,11 +75,48 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
     }
 
     fun saveToSharedPreference(){
-        TODO()
+        println("Save to shared preference")
     }
 
     fun saveToSQLite(){
-        TODO()
+        println("Save to sql lite")
+    }
+
+    fun loadFromLocalStorage(){
+        when(storageChoice){
+            "file system" -> {
+                loadFromFileSystem()
+            }
+            "shared preference" -> {
+                loadFromSharedPreference()
+            }
+            "SQLite" -> {
+                loadFromSQLite()
+            }
+
+        }
+    }
+
+    fun loadFromFileSystem(){
+        var fileObj = File(this.filesDir, filename)
+        if (fileObj.exists()){
+            var lines = fileObj.readLines()
+            var loadedStr = ""
+            lines.forEach({loadedStr += it + "\n" })
+            loadText?.visibility = View.VISIBLE
+            loadText?.text = loadedStr
+        }
+        else{
+            Toast.makeText(this, "File not found", Toast.LENGTH_SHORT)
+        }
+    }
+
+    fun loadFromSharedPreference(){
+        println("Load from share prefrence")
+    }
+
+    fun loadFromSQLite(){
+        println("Load form sql lite")
     }
 
 
