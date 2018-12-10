@@ -13,6 +13,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
 
     var storageChoice = "file system"
     val filename = "test.txt"
+    val sharedPreferenceName = "test_pref"
     var inputTextField: TextView? = null
     var loadText:TextView? = null
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -37,7 +38,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         when(v?.id){
             R.id.save_button -> {
                 Toast.makeText(this, "Save button clicked", Toast.LENGTH_SHORT).show()
-                saveToFileSystem()
+                saveToLocalStorage()
                 inputTextField?.text = ""
 
             }
@@ -56,7 +57,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
             "file system" -> {
                 saveToFileSystem()
             }
-            "shared preference" -> {
+            "Shared preference" -> {
                 saveToSharedPreference()
             }
             "SQLite" -> {
@@ -75,7 +76,11 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
     }
 
     fun saveToSharedPreference(){
-        println("Save to shared preference")
+        var sharedPref = this.getSharedPreferences(sharedPreferenceName, Context.MODE_PRIVATE)
+        var editor = sharedPref.edit()
+        editor.putString("text", inputTextField?.text.toString())
+        editor.commit()
+
     }
 
     fun saveToSQLite(){
@@ -87,7 +92,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
             "file system" -> {
                 loadFromFileSystem()
             }
-            "shared preference" -> {
+            "Shared preference" -> {
                 loadFromSharedPreference()
             }
             "SQLite" -> {
@@ -103,8 +108,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
             var lines = fileObj.readLines()
             var loadedStr = ""
             lines.forEach({loadedStr += it + "\n" })
-            loadText?.visibility = View.VISIBLE
-            loadText?.text = loadedStr
+            populateLoadTextView(loadedStr)
+
         }
         else{
             Toast.makeText(this, "File not found", Toast.LENGTH_SHORT)
@@ -112,11 +117,21 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
     }
 
     fun loadFromSharedPreference(){
-        println("Load from share prefrence")
+        var sharedPref = this.getSharedPreferences(sharedPreferenceName, Context.MODE_PRIVATE)
+        var loadedText = sharedPref.getString("text", "default")
+        if (!loadedText.equals("default")){
+            populateLoadTextView(loadedText)
+        }
     }
 
     fun loadFromSQLite(){
         println("Load form sql lite")
+    }
+
+    fun populateLoadTextView(textString: String){
+        loadText?.visibility = View.VISIBLE
+        loadText?.text = textString
+
     }
 
 
