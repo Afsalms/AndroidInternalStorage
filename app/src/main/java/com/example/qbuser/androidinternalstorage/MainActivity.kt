@@ -6,6 +6,8 @@ import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
 import android.widget.*
+import com.example.qbuser.androidinternalstorage.db.DatabaseHandler
+import com.example.qbuser.androidinternalstorage.models.InputEntries
 import kotlinx.android.synthetic.main.activity_main.*
 import java.io.File
 
@@ -84,7 +86,21 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
     }
 
     fun saveToSQLite(){
-        println("Save to sql lite")
+        var dbHandler = DatabaseHandler(this)
+        var newData:InputEntries = InputEntries()
+        var text = inputTextField?.text.toString()
+        newData.text = text
+        if (newData.text == null){
+            return
+        }
+        var is_added = dbHandler.addEntry(newData)
+        if (is_added){
+            Toast.makeText(this, "New record added successfully", Toast.LENGTH_SHORT).show()
+        }
+        else{
+            Toast.makeText(this, "Error please retry after some time", Toast.LENGTH_SHORT).show()
+        }
+
     }
 
     fun loadFromLocalStorage(){
@@ -119,13 +135,20 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
     fun loadFromSharedPreference(){
         var sharedPref = this.getSharedPreferences(sharedPreferenceName, Context.MODE_PRIVATE)
         var loadedText = sharedPref.getString("text", "default")
-        if (!loadedText.equals("default")){
+        if (loadedText != null && !loadedText.equals("default")){
             populateLoadTextView(loadedText)
         }
     }
 
     fun loadFromSQLite(){
-        println("Load form sql lite")
+        var dbhandler = DatabaseHandler(this)
+        var saveEntries = dbhandler.getAllEntries()
+        var loadText = ""
+        for (item in saveEntries){
+            loadText += item.text + "\n"
+        }
+        populateLoadTextView(loadText)
+
     }
 
     fun populateLoadTextView(textString: String){

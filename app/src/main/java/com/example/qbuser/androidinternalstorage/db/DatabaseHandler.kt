@@ -11,8 +11,7 @@ class DatabaseHandler(context: Context): SQLiteOpenHelper(context, DatabaseHandl
     override fun onCreate(db: SQLiteDatabase) {
         val CREATE_TABLE = "CREATE TABLE $TABLE_NAME (" +
                 ID + " INTEGER PRIMARY KEY AUTOINCREMENT ," +
-                TEXT + " TEXT,"+
-                );"
+                TEXT + " TEXT"+");"
         db.execSQL(CREATE_TABLE)
     }
 
@@ -41,7 +40,7 @@ class DatabaseHandler(context: Context): SQLiteOpenHelper(context, DatabaseHandl
     fun getAllEntries(): ArrayList<InputEntries> {
         var entriesList = ArrayList<InputEntries>()
         val db = this.writableDatabase
-        val queryStr = "SELECT *  from $DB_NAME"
+        val queryStr = "SELECT *  from $TABLE_NAME"
         val cursor = db.rawQuery(queryStr, null)
         if (cursor != null) {
             cursor.moveToFirst()
@@ -54,6 +53,7 @@ class DatabaseHandler(context: Context): SQLiteOpenHelper(context, DatabaseHandl
             }
 
             }
+        cursor.close()
         return entriesList
         }
 }
